@@ -761,9 +761,15 @@ select {
   
   <div class="form-field">
     <div class="address-block">
-      <label>Postcode: *
-        <input id="postcode" name="postcode" required>
-      </label>
+<label>Postcode: *
+  <input id="postcode" name="postcode"
+         required
+         pattern="^\d{4}(\s[A-Z]{2})?$"
+         title="Voer de postcode in als '1234' of '1234 AB' (spatie verplicht bij letters)."
+         oninput="handlePostcodeInput(this)"
+         oninvalid="this.setCustomValidity('Postcode moet in de vorm 1234 of 1234 AB zijn (met spatie en hoofdletters).')">
+</label>
+
       <label>Adres: *
         <input id="address" name="address" required>
       </label>
@@ -1399,7 +1405,7 @@ function toggleItem(checkbox) {
     const stepinfo = document.getElementById('stepinfo');
     const stepNames = ['Welkom','Klant','Informatie','Bestelling','Overzicht','Bedankt'];
    
-    function validateCurrentStep() {
+function validateCurrentStep() {
   const current = steps[currentStep];
   const inputs = current.querySelectorAll('input[required], select[required], textarea[required]');
   const toggleFields = current.querySelectorAll('.required-toggle');
@@ -1410,17 +1416,22 @@ function toggleItem(checkbox) {
 
   // Validatie van standaard inputs
   inputs.forEach(input => {
-    const value = input.value.trim();
     const label = input.closest('label');
 
-    const showError = () => {
+    // Speciale behandeling postcode: forceer uppercase + custom validity
+    if (input.id === 'postcode') {
+      handlePostcodeInput(input);
+    }
+
+    const showError = (msg = 'Verplicht veld') => {
       input.classList.add('error');
       if (label && !label.querySelector('.input-error-message')) {
         const errorMsg = document.createElement('div');
         errorMsg.className = 'input-error-message';
-        errorMsg.innerText = 'Verplicht veld';
+        errorMsg.innerText = msg;
         label.appendChild(errorMsg);
       }
+      isValid = false;
     };
 
     const clearError = () => {
@@ -1429,18 +1440,30 @@ function toggleItem(checkbox) {
       if (existing) existing.remove();
     };
 
-    if (!value) {
+    // Leeg?
+    if (!input.value.trim()) {
       showError();
-      isValid = false;
     } else {
-      clearError();
+      // HTML5 pattern/type checken
+      if (!input.checkValidity()) {
+        // toon pattern-specifieke melding
+        const msg = input.validationMessage || 'Ongeldige invoer';
+        showError(msg);
+      } else {
+        clearError();
+      }
     }
 
-    // Live validatie bij typen
-    input.addEventListener('input', clearError);
+    // Live feedback
+    input.addEventListener('input', () => {
+      if (input.id === 'postcode') handlePostcodeInput(input);
+      if (input.checkValidity() && input.value.trim()) {
+        clearError();
+      }
+    });
   });
 
-  // Validatie van toggle-velden
+  // Validatie van toggle-velden (hidden inputs die via knoppen worden gezet)
   toggleFields.forEach(field => {
     const value = field.value.trim();
     const container = field.closest('.form-field');
@@ -1558,9 +1581,20 @@ function toggleItem(checkbox) {
       }
       document.getElementById('backBtn').style.display = n > 0 && n < steps.length - 1 ? 'inline' : 'none';
     }
-
-    function nextStep() {
-  if (!validateCurrentStep()) return;
+  
+function nextStep() {
+  if (!validateCurrentStep()) {
+    const firstInvalid = steps[currentStep].querySelector(':invalid') 
+                      || steps[currentStep].querySelector('.error');
+    if (firstInvalid && typeof firstInvalid.reportValidity === 'function') {
+      firstInvalid.reportValidity();
+    }
+    // Scroll naar het eerste foutveld (handig op mobile)
+    if (firstInvalid && firstInvalid.scrollIntoView) {
+      firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    return;
+  }
   steps[currentStep].classList.remove('active');
   currentStep++;
   showStep(currentStep);
@@ -2017,6 +2051,17 @@ async function lookupFiliaal() {
     }
   }
 }
+
+  function handlePostcodeInput(el) {
+    el.value = el.value.toUpperCase();
+    const ok = /^\d{4}(\s[A-Z]{2})?$/.test(el.value);
+    if (!ok && el.value.trim() !== '') {
+      el.setCustomValidity("Postcode moet in de vorm 1234 of 1234 AB zijn (met spatie en hoofdletters).");
+    } else {
+      el.setCustomValidity("");
+    }
+  }
+
 
 
     loadSheets();
