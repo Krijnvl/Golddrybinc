@@ -1789,75 +1789,124 @@ const canvas = document.getElementById("signature");
     document.getElementById("signatureData").value = ""; // optioneel ook input leegmaken
   }
 
-    
-  const SHEETS = [
-  'https://docs.google.com/spreadsheets/d/e/2PACX-1vQd5l-abTTXYY_T4d2iJoLewaNseO_2UH6OoiCiCEWfjP_3T6cbUVd4WQp6QjnS_aoCRfwqgEZRchsv/pub?gid=51926634&single=true&output=csv',
-  'https://docs.google.com/spreadsheets/d/e/2PACX-1vQd5l-abTTXYY_T4d2iJoLewaNseO_2UH6OoiCiCEWfjP_3T6cbUVd4WQp6QjnS_aoCRfwqgEZRchsv/pub?gid=629687264&single=true&output=csv',
-  'https://docs.google.com/spreadsheets/d/e/2PACX-1vQd5l-abTTXYY_T4d2iJoLewaNseO_2UH6OoiCiCEWfjP_3T6cbUVd4WQp6QjnS_aoCRfwqgEZRchsv/pub?gid=1984994851&single=true&output=csv',
-  'https://docs.google.com/spreadsheets/d/e/2PACX-1vQd5l-abTTXYY_T4d2iJoLewaNseO_2UH6OoiCiCEWfjP_3T6cbUVd4WQp6QjnS_aoCRfwqgEZRchsv/pub?gid=1867508359&single=true&output=csv',
-  'https://docs.google.com/spreadsheets/d/e/2PACX-1vQd5l-abTTXYY_T4d2iJoLewaNseO_2UH6OoiCiCEWfjP_3T6cbUVd4WQp6QjnS_aoCRfwqgEZRchsv/pub?gid=0&single=true&output=csv',
-  'https://docs.google.com/spreadsheets/d/e/2PACX-1vQd5l-abTTXYY_T4d2iJoLewaNseO_2UH6OoiCiCEWfjP_3T6cbUVd4WQp6QjnS_aoCRfwqgEZRchsv/pub?gid=790443615&single=true&output=csv',
-  'https://docs.google.com/spreadsheets/d/e/2PACX-1vQd5l-abTTXYY_T4d2iJoLewaNseO_2UH6OoiCiCEWfjP_3T6cbUVd4WQp6QjnS_aoCRfwqgEZRchsv/pub?gid=690258645&single=true&output=csv',
-  'https://docs.google.com/spreadsheets/d/e/2PACX-1vQd5l-abTTXYY_T4d2iJoLewaNseO_2UH6OoiCiCEWfjP_3T6cbUVd4WQp6QjnS_aoCRfwqgEZRchsv/pub?gid=1028454158&single=true&output=csv',
-  'https://docs.google.com/spreadsheets/d/e/2PACX-1vQd5l-abTTXYY_T4d2iJoLewaNseO_2UH6OoiCiCEWfjP_3T6cbUVd4WQp6QjnS_aoCRfwqgEZRchsv/pub?gid=256343446&single=true&output=csv',
-  'https://docs.google.com/spreadsheets/d/e/2PACX-1vQd5l-abTTXYY_T4d2iJoLewaNseO_2UH6OoiCiCEWfjP_3T6cbUVd4WQp6QjnS_aoCRfwqgEZRchsv/pub?gid=1608034829&single=true&output=csv'
+const SHEET_CONFIG = [
+  {
+    url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQd5l-abTTXYY_T4d2iJoLewaNseO_2UH6OoiCiCEWfjP_3T6cbUVd4WQp6QjnS_aoCRfwqgEZRchsv/pub?gid=51926634&single=true&output=csv",
+    cols: { companyName:2, adres:3, postcode:4, city:5, provincie:6 }
+  },
+  {
+    url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQd5l-abTTXYY_T4d2iJoLewaNseO_2UH6OoiCiCEWfjP_3T6cbUVd4WQp6QjnS_aoCRfwqgEZRchsv/pub?gid=629687264&single=true&output=csv",
+    cols: { companyName:2, adres:3, postcode:4, city:5, provincie:6 }
+  },
+  {
+    url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQd5l-abTTXYY_T4d2iJoLewaNseO_2UH6OoiCiCEWfjP_3T6cbUVd4WQp6QjnS_aoCRfwqgEZRchsv/pub?gid=1984994851&single=true&output=csv",
+    cols: { companyName:2, adres:3, postcode:4, city:5, provincie:6 }
+  },
+  {
+    url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQd5l-abTTXYY_T4d2iJoLewaNseO_2UH6OoiCiCEWfjP_3T6cbUVd4WQp6QjnS_aoCRfwqgEZRchsv/pub?gid=1867508359&single=true&output=csv",
+    cols: { companyName:2, adres:3, postcode:4, city:5, provincie:6 }
+  },
+  {
+    url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQd5l-abTTXYY_T4d2iJoLewaNseO_2UH6OoiCiCEWfjP_3T6cbUVd4WQp6QjnS_aoCRfwqgEZRchsv/pub?gid=0&single=true&output=csv",
+    cols: { 
+      companyName:2, adres:3, postcode:4, city:5, provincie:6,
+      email:12, firstName:13, lastName:14, phone:15
+    }
+  },
+  {
+    url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQd5l-abTTXYY_T4d2iJoLewaNseO_2UH6OoiCiCEWfjP_3T6cbUVd4WQp6QjnS_aoCRfwqgEZRchsv/pub?gid=790443615&single=true&output=csv",
+    cols: { companyName:2, adres:3, postcode:4, city:5, provincie:6 }
+  },
+  {
+    url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQd5l-abTTXYY_T4d2iJoLewaNseO_2UH6OoiCiCEWfjP_3T6cbUVd4WQp6QjnS_aoCRfwqgEZRchsv/pub?gid=690258645&single=true&output=csv",
+    cols: { 
+      companyName:2, adres:3, postcode:4, city:5, provincie:6,
+      email:11, firstName:12, lastName:13, phone:15
+    }
+  },
+  {
+    url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQd5l-abTTXYY_T4d2iJoLewaNseO_2UH6OoiCiCEWfjP_3T6cbUVd4WQp6QjnS_aoCRfwqgEZRchsv/pub?gid=1028454158&single=true&output=csv",
+    cols: { 
+      companyName:2, adres:3, postcode:4, city:5, provincie:6,
+      email:17, firstName:18, lastName:19, phone:21
+    }
+  },
+  {
+    url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQd5l-abTTXYY_T4d2iJoLewaNseO_2UH6OoiCiCEWfjP_3T6cbUVd4WQp6QjnS_aoCRfwqgEZRchsv/pub?gid=256343446&single=true&output=csv",
+    // let op: hier is plaats uit kolom 6 en provincie uit kolom 12
+    cols: { companyName:2, adres:3, postcode:4, city:6, provincie:12 }
+  },
+  {
+    url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQd5l-abTTXYY_T4d2iJoLewaNseO_2UH6OoiCiCEWfjP_3T6cbUVd4WQp6QjnS_aoCRfwqgEZRchsv/pub?gid=1608034829&single=true&output=csv",
+    cols: { 
+      companyName:2, adres:3, postcode:4, city:5, provincie:6,
+      email:11, firstName:12, lastName:13, phone:15
+    }
+  }
 ];
 
 const lookupMap = new Map();
+
+/* simpele CSV-splitter. Als je veel quotes/komma’s in velden hebt,
+   kun je later upgraden naar een robuuste parser. */
+function parseCSV(text) {
+  return text
+    .split(/\r?\n/)
+    .filter(r => r.trim() !== "")
+    .map(row => row.split(",").map(c => c.trim().replace(/^"|"$/g, "")));
+}
+
+/* helper: haal cel uit 1-based kolomindex; veilige fallback naar "" */
+function getCell(cells, oneBasedIndex) {
+  if (!oneBasedIndex || oneBasedIndex < 1) return "";
+  const idx = oneBasedIndex - 1; // 0-based
+  return (cells[idx] ?? "").trim();
+}
+
 async function loadSheets() {
   const progressBar = document.getElementById("progressBar");
   const loaderText = document.getElementById("filiaalLoader");
   const input = document.getElementById("2fC3");
 
-  const CONTACT_GIDS = [
-    "1028454158",
-    "1608034829",
-    "690258645",
-    "790443615",
-    "0"
-  ];
+  const total = SHEET_CONFIG.length;
+  let loaded = 0;
 
-  const totalSheets = SHEETS.length;
-  let loadedSheets = 0;
-
-  for (const url of SHEETS) {
+  for (const { url, cols } of SHEET_CONFIG) {
     try {
-      const response = await fetch(url);
-      const csvText = await response.text();
-
-      const rows = csvText.split('\n').map(row => row.split(',').map(cell => cell.trim()));
-
-      const isContactSheet = CONTACT_GIDS.some(gid => url.includes(`gid=${gid}`));
+      const res = await fetch(url);
+      const text = await res.text();
+      const rows = parseCSV(text);
 
       for (const cells of rows) {
         if (!cells.length || !cells[0]) continue;
 
-        const id = cells[0];
+        // Kolom A (1e kolom) = filiaal ID (key)
+        const id = cells[0].trim();
+        if (!id) continue;
+
         const entry = {
-          companyName: cells[1] || "",
-          adres: cells[2] || "",
-          postcode: cells[3] || "",
-          city: cells[5] || "",
-          provincie: cells[11] || ""
+          companyName: getCell(cells, cols.companyName),
+          adres:       getCell(cells, cols.adres),
+          postcode:    getCell(cells, cols.postcode),
+          city:        getCell(cells, cols.city),
+          provincie:   getCell(cells, cols.provincie),
+          // optionele contactvelden (staan niet op elke sheet)
+          email:     getCell(cells, cols.email),
+          firstName: getCell(cells, cols.firstName),
+          lastName:  getCell(cells, cols.lastName),
+          phone:     getCell(cells, cols.phone),
         };
 
-        if (isContactSheet) {
-          entry.email = cells[13] || "";
-          entry.firstName = cells[14] || "";
-          entry.lastName = cells[15] || "";
-          entry.phone = cells[16] || "";
-        }
-
+        // schrijf/overschrijf — de laatste sheet met dit ID wint (of verander naar alleen-set-if-absent)
         lookupMap.set(id, entry);
       }
-
-      loadedSheets++;
-      const percentage = Math.round((loadedSheets / totalSheets) * 100);
-      if (progressBar) progressBar.style.width = `${percentage}%`;
-      if (loaderText) loaderText.innerText = `Laden winkeldata... (${percentage}%)`;
-
     } catch (e) {
       console.error("Fout bij laden CSV:", url, e);
+    } finally {
+      loaded++;
+      const pct = Math.round((loaded / total) * 100);
+      if (progressBar) progressBar.style.width = `${pct}%`;
+      if (loaderText) loaderText.innerText = `Laden winkeldata... (${pct}%)`;
     }
   }
 
@@ -1869,7 +1918,7 @@ async function loadSheets() {
     setTimeout(() => input.focus(), 300);
   }
 }
-
+ 
 
 
 
